@@ -1,0 +1,90 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        FastScanner fs = new FastScanner(System.in);
+
+        int n = fs.nextInt();
+
+        int[] a = new int[n];
+        int[] b = new int[n];
+
+        int totalB = 0;
+        for (int i = 0; i < n; i++) {
+            a[i] = fs.nextInt();
+            b[i] = fs.nextInt();
+            totalB += b[i];
+        }
+
+        final int MAXA = 10001;
+
+        // dp[k][sa] = max sumB using exactly k glasses with total capacity = sa
+        int[][] dp = new int[n + 1][MAXA];
+
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+
+        dp[0][0] = 0;
+
+        for (int i = 0; i < n; i++) {
+            // traverse backwards (0/1 knapsack)
+            for (int j = Math.min(i, n - 1); j >= 0; j--) {
+                for (int sa = 0; sa + a[i] < MAXA; sa++) {
+                    if (dp[j][sa] < 0) continue;
+
+                    int nsa = sa + a[i];
+                    int nsb = dp[j][sa] + b[i];
+
+                    dp[j + 1][nsa] = Math.max(dp[j + 1][nsa], nsb);
+                }
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int k = 1; k <= n; k++) {
+            double ans = 0;
+
+            for (int sa = 0; sa < MAXA; sa++) {
+                if (dp[k][sa] < 0) continue;
+
+                int sumB = dp[k][sa];
+
+                double water = Math.min(
+                        (double) sa,
+                        sumB + (totalB - sumB) / 2.0
+                );
+
+                ans = Math.max(ans, water);
+            }
+
+            sb.append(String.format("%.10f", ans));
+            if (k < n) sb.append(" ");
+        }
+
+        System.out.println(sb.toString());
+    }
+
+    // Fast IO (important for CF)
+    static class FastScanner {
+        BufferedReader br;
+        StringTokenizer st;
+
+        FastScanner(InputStream is) {
+            br = new BufferedReader(new InputStreamReader(is));
+        }
+
+        String next() throws IOException {
+            while (st == null || !st.hasMoreTokens())
+                st = new StringTokenizer(br.readLine());
+            return st.nextToken();
+        }
+
+        int nextInt() throws IOException {
+            return Integer.parseInt(next());
+        }
+    }
+}

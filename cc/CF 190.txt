@@ -1,0 +1,46 @@
+import java.util.*;
+
+public class Main {
+    static int index = 0;
+    static String[] arr;
+    static StringBuilder sb = new StringBuilder();
+
+    static boolean solve() {
+        if (index >= arr.length) return false;
+
+        String word = arr[index++];
+
+        if (word.equals("int")) {
+            sb.append("int");
+            return true;
+        } else {
+            // pair
+            sb.append("pair<");
+
+            if (!solve()) return false;
+
+            sb.append(",");
+
+            if (!solve()) return false;
+
+            sb.append(">");
+            return true;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        arr = sc.nextLine().split(" ");
+        index = 0;
+
+        if (!solve() || index != arr.length) {
+            System.out.println("Error occurred");
+        } else {
+            System.out.println(sb.toString());
+        }
+    }
+}
